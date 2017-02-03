@@ -12,6 +12,8 @@
 		97EFD9A51E4452DC00366905 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97EFD9A31E4452DC00366905 /* Main.storyboard */; };
 		97EFD9A71E4452DC00366905 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97EFD9A61E4452DC00366905 /* Assets.xcassets */; };
 		97EFD9AA1E4452DC00366905 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97EFD9A81E4452DC00366905 /* LaunchScreen.storyboard */; };
+		97EFD9B21E4452F400366905 /* ZBDefaultMetal.metal in Sources */ = {isa = PBXBuildFile; fileRef = 97EFD9B11E4452F400366905 /* ZBDefaultMetal.metal */; };
+		97EFD9B41E44531C00366905 /* ZBMetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97EFD9B31E44531C00366905 /* ZBMetalView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,6 +24,8 @@
 		97EFD9A61E4452DC00366905 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		97EFD9A91E4452DC00366905 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97EFD9AB1E4452DC00366905 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		97EFD9B11E4452F400366905 /* ZBDefaultMetal.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = ZBDefaultMetal.metal; sourceTree = "<group>"; };
+		97EFD9B31E44531C00366905 /* ZBMetalView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZBMetalView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +64,8 @@
 				97EFD9A61E4452DC00366905 /* Assets.xcassets */,
 				97EFD9A81E4452DC00366905 /* LaunchScreen.storyboard */,
 				97EFD9AB1E4452DC00366905 /* Info.plist */,
+				97EFD9B11E4452F400366905 /* ZBDefaultMetal.metal */,
+				97EFD9B31E44531C00366905 /* ZBMetalView.swift */,
 			);
 			path = ZBMetal;
 			sourceTree = "<group>";
@@ -137,7 +143,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				97EFD9B21E4452F400366905 /* ZBDefaultMetal.metal in Sources */,
 				97EFD9A21E4452DC00366905 /* ViewController.swift in Sources */,
+				97EFD9B41E44531C00366905 /* ZBMetalView.swift in Sources */,
 				97EFD9A01E4452DC00366905 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
