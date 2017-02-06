@@ -9,26 +9,28 @@
 import UIKit
 import MetalKit
 
-class ZBMetalView: MTKView {
+public class ZBMetalView: MTKView {
 
     var vertexBuffer: MTLBuffer!
     var rps: MTLRenderPipelineState! = nil
 
     var uniformBuffer: MTLBuffer!
 
-    required init(coder: NSCoder) {
+    required public init(coder: NSCoder) {
         super.init(coder: coder)
+    }
 
-        self.device = MTLCreateSystemDefaultDevice()
+    override public init(frame frameRect: CGRect, device: MTLDevice?) {
+        super.init(frame: frameRect, device: device)
 
         self.createBuffer()
         self.registerShaders()
     }
 
     func createBuffer() {
-        let vertexData = [Vertex(position: [-1.0, -1.0, 0.0, 1.0], color: [1, 0, 0, 1]),
-                          Vertex(position: [1.0, -1.0, 0.0, 1.0], color: [0, 1, 0, 1]),
-                          Vertex(position: [0.0, 1.0, 0.0, 1.0], color: [0, 0, 1, 1])]
+        let vertexData = [Vertex(pos: [-1.0, -1.0, 0.0, 1.0], col: [1, 0, 0, 1]),
+                          Vertex(pos: [1.0, -1.0, 0.0, 1.0], col: [0, 1, 0, 1]),
+                          Vertex(pos: [0.0, 1.0, 0.0, 1.0], col: [0, 0, 1, 1])]
         let dataSize = vertexData.count * MemoryLayout<Vertex>.size
         self.vertexBuffer = self.device?.makeBuffer(bytes: vertexData, length: dataSize, options: [])
 
@@ -38,23 +40,30 @@ class ZBMetalView: MTKView {
     }
 
     func registerShaders() {
-        guard let library = self.device?.newDefaultLibrary() else { return }
-        let vertexFunc = library.makeFunction(name: "vertex_func")
-        let fragFunc = library.makeFunction(name: "fragment_func")
-
-        let rpld = MTLRenderPipelineDescriptor()
-        rpld.vertexFunction = vertexFunc
-        rpld.fragmentFunction = fragFunc
-        rpld.colorAttachments[0].pixelFormat = .bgra8Unorm
+        let path = Bundle.main.path(forResource: "ZBDefaultMetal", ofType: "metal")
+        let input: String?
+        let library: MTLLibrary
+        let vertexFunc: MTLFunction
+        let fragFunc: MTLFunction
 
         do {
+            input = try String(contentsOfFile: path!, encoding: String.Encoding.utf8)
+            library = try self.device!.makeLibrary(source: input!, options: nil)
+            vertexFunc = library.makeFunction(name: "vertex_func")!
+            fragFunc = library.makeFunction(name: "fragment_func")!
+
+            let rpld = MTLRenderPipelineDescriptor()
+            rpld.vertexFunction = vertexFunc
+            rpld.fragmentFunction = fragFunc
+            rpld.colorAttachments[0].pixelFormat = .bgra8Unorm
+
             self.rps = try self.device?.makeRenderPipelineState(descriptor: rpld)
-        } catch let error {
-            print("\(error)")
+        } catch let e {
+            print(e)
         }
     }
 
-    override func draw(_ rect: CGRect) {
+    override public func draw(_ rect: CGRect) {
         super.draw(rect)
 
         guard let rpd = self.currentRenderPassDescriptor else { return }
