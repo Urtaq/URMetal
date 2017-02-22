@@ -65,9 +65,9 @@ struct Matrix {
 
     func modelMatrix(_ originMatrix: Matrix) -> Matrix {
         var matrix = originMatrix
-        matrix = rotationMatrix(matrix, float3(0.0, 0.0, 0.1))
+//        matrix = rotationMatrix(matrix, float3(0.0, 0.0, 0.1))
         matrix = scalingMatrix(matrix, 0.25)
-        matrix = translationMatrix(matrix, float3(0.0, 0.5, 0.0))
+//        matrix = translationMatrix(matrix, float3(0.0, 0.5, 0.0))
         return matrix
     }
 }

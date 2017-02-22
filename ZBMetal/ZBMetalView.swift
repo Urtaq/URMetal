@@ -28,14 +28,23 @@ class ZBMetalView: MTKView {
     }
 
     func createBuffer() {
-        let vertexData = [Vertex(position: [-1.0, -1.0, 0.0, 1.0], color: [1, 0, 0, 1]),
-                          Vertex(position: [ 1.0, -1.0, 0.0, 1.0], color: [0, 1, 0, 1]),
-                          Vertex(position: [ 1.0,  1.0, 0.0, 1.0], color: [0, 0, 1, 1]),
-                          Vertex(position: [-1.0,  1.0, 0.0, 1.0], color: [1, 1, 1, 1])]
+        let vertexData = [Vertex(position: [-1.0, -1.0,  1.0, 1.0], color: [1, 0, 0, 1]),
+                          Vertex(position: [ 1.0, -1.0,  1.0, 1.0], color: [0, 1, 0, 1]),
+                          Vertex(position: [ 1.0,  1.0,  1.0, 1.0], color: [0, 0, 1, 1]),
+                          Vertex(position: [-1.0,  1.0,  1.0, 1.0], color: [1, 1, 1, 1]),
+                          Vertex(position: [-1.0, -1.0, -1.0, 1.0], color: [0, 0, 1, 1]),
+                          Vertex(position: [ 1.0, -1.0, -1.0, 1.0], color: [1, 1, 1, 1]),
+                          Vertex(position: [ 1.0,  1.0, -1.0, 1.0], color: [1, 0, 0, 1]),
+                          Vertex(position: [-1.0,  1.0, -1.0, 1.0], color: [0, 1, 0, 1])]
         let dataSize = vertexData.count * MemoryLayout<Vertex>.size
         self.vertexBuffer = self.device?.makeBuffer(bytes: vertexData, length: dataSize, options: [])
 
-        let indexData: [UInt16] = [0, 1, 2, 2, 3, 0]
+        let indexData: [UInt16] = [0, 1, 2, 2, 3, 0, // front
+                                   1, 5, 6, 6, 2, 1, // right
+                                   3, 2, 6, 6, 7, 3, // top
+                                   4, 5, 1, 1, 0, 4, // bottom
+                                   4, 0, 3, 3, 7, 4, // left
+                                   7, 6, 5, 5, 4, 7] // back
         self.indexBuffer = self.device?.makeBuffer(bytes: indexData, length: MemoryLayout<UInt16>.size * indexData.count, options: [])
 
         self.uniformBuffer = self.device?.makeBuffer(length: MemoryLayout<Float>.size * 16, options: [])
