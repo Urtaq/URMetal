@@ -49,7 +49,10 @@ class ZBMetalView: MTKView {
 
         self.uniformBuffer = self.device?.makeBuffer(length: MemoryLayout<Float>.size * 16, options: [])
         let bufferPointer = self.uniformBuffer.contents()
-        memcpy(bufferPointer, Matrix().modelMatrix(Matrix()).m, MemoryLayout<Float>.size * 16)
+
+        let modelViewProjectionMatrix = modelMatrix()
+        var uniforms = Uniforms(modelViewProjectionMatrix: modelViewProjectionMatrix)
+        memcpy(bufferPointer, &uniforms, MemoryLayout<Uniforms>.size)
     }
 
     func registerShaders() {
