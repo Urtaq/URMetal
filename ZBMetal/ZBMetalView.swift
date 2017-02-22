@@ -18,6 +18,8 @@ class ZBMetalView: MTKView {
 
     var uniformBuffer: MTLBuffer!
 
+    var rotation: Float = 0
+
     required init(coder: NSCoder) {
         super.init(coder: coder)
 
@@ -50,7 +52,25 @@ class ZBMetalView: MTKView {
         self.uniformBuffer = self.device?.makeBuffer(length: MemoryLayout<Float>.size * 16, options: [])
         let bufferPointer = self.uniformBuffer.contents()
 
-        let modelViewProjectionMatrix = modelMatrix()
+        let aspect = Float(self.drawableSize.width / self.drawableSize.height)
+        let projMatrix = projectionMatrix(near: 1, far: 100, aspect: aspect, fovy: 1.1)
+        let modelViewProjectionMatrix = matrix_multiply(projMatrix, matrix_multiply(viewMatrix(), modelMatrix()))
+        var uniforms = Uniforms(modelViewProjectionMatrix: modelViewProjectionMatrix)
+        memcpy(bufferPointer, &uniforms, MemoryLayout<Uniforms>.size)
+    }
+
+    func update() {
+        let scaled = scalingMatrix(scale: 0.5)
+        self.rotation += 1 / 100 * Float.pi / 4
+        let rotatedY = rotationMatrix(angle: self.rotation, axis: float3(0, 1, 0))
+        let rotatedX = rotationMatrix(angle: Float.pi / 4, axis: float3(1, 0, 0))
+        let modelMatrix = matrix_multiply(matrix_multiply(rotatedX, rotatedY), scaled)
+        let cameraPosition = vector_float3(0, 0, -3)
+        let viewMatrix = translationMatrix(position: cameraPosition)
+        let aspect = Float(self.drawableSize.width / self.drawableSize.height)
+        let projMatrix = projectionMatrix(near: 0, far: 10, aspect: aspect, fovy: 1)
+        let modelViewProjectionMatrix = matrix_multiply(projMatrix, matrix_multiply(viewMatrix, modelMatrix))
+        let bufferPointer = self.uniformBuffer.contents()
         var uniforms = Uniforms(modelViewProjectionMatrix: modelViewProjectionMatrix)
         memcpy(bufferPointer, &uniforms, MemoryLayout<Uniforms>.size)
     }
@@ -75,6 +95,8 @@ class ZBMetalView: MTKView {
     override func draw(_ rect: CGRect) {
         super.draw(rect)
 
+        self.update()
+
         guard let rpd = self.currentRenderPassDescriptor else { return }
         guard let drawable = self.currentDrawable else { return }
         let bleen = MTLClearColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
@@ -85,6 +107,8 @@ class ZBMetalView: MTKView {
         let commandBuffer = self.device?.makeCommandQueue().makeCommandBuffer()
         let encoder = commandBuffer?.makeRenderCommandEncoder(descriptor: rpd)
 
+        encoder?.setFrontFacing(MTLWinding.counterClockwise)
+        encoder?.setCullMode(MTLCullMode.back)
         encoder?.setRenderPipelineState(self.rps)
         encoder?.setVertexBuffer(self.vertexBuffer, offset: 0, at: 0)
         encoder?.setVertexBuffer(self.uniformBuffer, offset: 0, at: 1)
