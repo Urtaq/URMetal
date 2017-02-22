@@ -14,6 +14,8 @@ class ZBMetalView: MTKView {
     var vertexBuffer: MTLBuffer!
     var rps: MTLRenderPipelineState! = nil
 
+    var indexBuffer: MTLBuffer!
+
     var uniformBuffer: MTLBuffer!
 
     required init(coder: NSCoder) {
@@ -27,10 +29,14 @@ class ZBMetalView: MTKView {
 
     func createBuffer() {
         let vertexData = [Vertex(position: [-1.0, -1.0, 0.0, 1.0], color: [1, 0, 0, 1]),
-                          Vertex(position: [1.0, -1.0, 0.0, 1.0], color: [0, 1, 0, 1]),
-                          Vertex(position: [0.0, 1.0, 0.0, 1.0], color: [0, 0, 1, 1])]
+                          Vertex(position: [ 1.0, -1.0, 0.0, 1.0], color: [0, 1, 0, 1]),
+                          Vertex(position: [ 1.0,  1.0, 0.0, 1.0], color: [0, 0, 1, 1]),
+                          Vertex(position: [-1.0,  1.0, 0.0, 1.0], color: [1, 1, 1, 1])]
         let dataSize = vertexData.count * MemoryLayout<Vertex>.size
         self.vertexBuffer = self.device?.makeBuffer(bytes: vertexData, length: dataSize, options: [])
+
+        let indexData: [UInt16] = [0, 1, 2, 2, 3, 0]
+        self.indexBuffer = self.device?.makeBuffer(bytes: indexData, length: MemoryLayout<UInt16>.size * indexData.count, options: [])
 
         self.uniformBuffer = self.device?.makeBuffer(length: MemoryLayout<Float>.size * 16, options: [])
         let bufferPointer = self.uniformBuffer.contents()
@@ -70,7 +76,7 @@ class ZBMetalView: MTKView {
         encoder?.setRenderPipelineState(self.rps)
         encoder?.setVertexBuffer(self.vertexBuffer, offset: 0, at: 0)
         encoder?.setVertexBuffer(self.uniformBuffer, offset: 0, at: 1)
-        encoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3, instanceCount: 1)
+        encoder?.drawIndexedPrimitives(type: .triangle, indexCount: self.indexBuffer.length / MemoryLayout<UInt16>.size, indexType: .uint16, indexBuffer: self.indexBuffer, indexBufferOffset: 0)
 
         encoder?.endEncoding()
         commandBuffer?.present(drawable)
