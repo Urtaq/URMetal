@@ -1,32 +1,30 @@
 //
-//  ZBMetalView.swift
+//  ZBMTKViewDelegate.swift
 //  ZBMetal
 //
-//  Created by DongSoo Lee on 2017. 2. 3..
+//  Created by DongSoo Lee on 2017. 2. 28..
 //  Copyright © 2017년 zigbang. All rights reserved.
 //
 
 import MetalKit
 
-class ZBMetalView: MTKView {
+public class ZBMTKViewDelegate: NSObject, MTKViewDelegate {
 
+    var device: MTLDevice!
     var queue: MTLCommandQueue!
     var cps: MTLComputePipelineState!
 
-    required init(coder: NSCoder) {
-        super.init(coder: coder)
-
-        self.framebufferOnly = false
+    public override init() {
+        super.init()
 
         self.device = MTLCreateSystemDefaultDevice()
-
         self.registerShaders()
     }
 
     func registerShaders() {
-        self.queue = self.device?.makeCommandQueue()
+        self.queue = self.device.makeCommandQueue()
 
-        guard let library = self.device?.newDefaultLibrary() else { return }
+        guard let library = self.device.newDefaultLibrary() else { return }
         let kernel = library.makeFunction(name: "compute")
 
         do {
@@ -36,10 +34,13 @@ class ZBMetalView: MTKView {
         }
     }
 
-    override func draw(_ rect: CGRect) {
-        super.draw(rect)
+    public func mtkView(_ view: MTKView, drawableSizeWillChange size: CGSize) {
+        //
+    }
 
-        guard let drawable = self.currentDrawable else { return }
+    public func draw(in view: MTKView) {
+        view.framebufferOnly = false
+        guard let drawable = view.currentDrawable else { return }
 
         let commandBuffer = self.queue.makeCommandBuffer()
         let encoder = commandBuffer.makeComputeCommandEncoder()

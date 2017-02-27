@@ -6,6 +6,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -21,19 +22,20 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PhJ-mG-iFQ" customClass="ZBMetalView" customModule="ZBMetal" customModuleProvider="target">
-                                <rect key="frame" x="37.5" y="183.5" width="300" height="300"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="90e-n8-d3F" customClass="ZBMetalView" customModule="ZBMetal" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="146" width="375" height="375"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="300" id="CIO-t1-Wh7"/>
-                                    <constraint firstAttribute="height" constant="300" id="RIx-0V-5Im"/>
+                                    <constraint firstAttribute="width" secondItem="90e-n8-d3F" secondAttribute="height" multiplier="1:1" id="cYH-zd-fIb"/>
                                 </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="PhJ-mG-iFQ" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="ZfN-7X-Xan"/>
-                            <constraint firstItem="PhJ-mG-iFQ" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="tom-1P-jUo"/>
+                            <constraint firstItem="90e-n8-d3F" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="W0Y-Im-AFn"/>
+                            <constraint firstItem="90e-n8-d3F" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="kHd-eU-g2P"/>
+                            <constraint firstAttribute="trailing" secondItem="90e-n8-d3F" secondAttribute="trailing" id="l4w-ZH-v3g"/>
+                            <constraint firstItem="90e-n8-d3F" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="wxq-vr-4Yk"/>
                         </constraints>
                     </view>
                 </viewController>
