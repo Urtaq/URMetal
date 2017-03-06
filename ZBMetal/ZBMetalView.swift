@@ -8,10 +8,15 @@
 
 import MetalKit
 
-class ZBMetalView: MTKView {
+class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
 
     var queue: MTLCommandQueue!
     var cps: MTLComputePipelineState!
+
+    var timer: Float = 0
+    var timerBuffer: MTLBuffer!
+    var pos: CGPoint!
+    var mouseBuffer: MTLBuffer!
 
     required init(coder: NSCoder) {
         super.init(coder: coder)
@@ -21,6 +26,9 @@ class ZBMetalView: MTKView {
         self.device = MTLCreateSystemDefaultDevice()
 
         self.registerShaders()
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+        self.addGestureRecognizer(tapGesture)
     }
 
     func registerShaders() {
@@ -34,6 +42,16 @@ class ZBMetalView: MTKView {
         } catch let error {
             print("\(error)")
         }
+        self.timerBuffer = self.device?.makeBuffer(length: MemoryLayout<Float>.size, options: [])
+        self.mouseBuffer = self.device?.makeBuffer(length: MemoryLayout<CGPoint>.size, options: [])
+    }
+
+    func update() {
+        self.timer += 0.01
+        var bufferPointer = self.timerBuffer.contents()
+        memcpy(bufferPointer, &self.timer, MemoryLayout<Float>.size)
+        bufferPointer = self.mouseBuffer.contents()
+        memcpy(bufferPointer, &self.pos, MemoryLayout<CGPoint>.size)
     }
 
     override func draw(_ rect: CGRect) {
@@ -46,6 +64,9 @@ class ZBMetalView: MTKView {
 
         encoder.setComputePipelineState(self.cps)
         encoder.setTexture(drawable.texture, at: 0)
+        encoder.setBuffer(self.timerBuffer, offset: 0, at: 1)
+        encoder.setBuffer(self.mouseBuffer, offset: 0, at: 2)
+        self.update()
 
         let threadGroupCount = MTLSizeMake(8, 8, 1)
         let threadGroups = MTLSizeMake(drawable.texture.width / threadGroupCount.width, drawable.texture.height / threadGroupCount.height, 1)
@@ -54,5 +75,14 @@ class ZBMetalView: MTKView {
         encoder.endEncoding()
         commandBuffer.present(drawable)
         commandBuffer.commit()
+    }
+
+    func handleTap(gesture: UITapGestureRecognizer) {
+        if gesture.state == .ended {
+            self.pos = gesture.location(in: self)
+            let scale = self.layer.contentsScale
+            pos.x *= scale
+            pos.y *= scale
+        }
     }
 }
