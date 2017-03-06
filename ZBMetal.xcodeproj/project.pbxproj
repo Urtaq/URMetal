@@ -18,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9727E9D61E6D5A26005BDED3 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
 		972F2BC91E651420000D0511 /* ZBMTKViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZBMTKViewDelegate.swift; sourceTree = "<group>"; };
 		97EFD99C1E4452DC00366905 /* ZBMetal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZBMetal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97EFD99F1E4452DC00366905 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -69,6 +70,7 @@
 				97EFD9B11E4452F400366905 /* ZBDefaultMetal.metal */,
 				97EFD9B31E44531C00366905 /* ZBMetalView.swift */,
 				972F2BC91E651420000D0511 /* ZBMTKViewDelegate.swift */,
+				9727E9D61E6D5A26005BDED3 /* MyPlayground.playground */,
 			);
 			path = ZBMetal;
 			sourceTree = "<group>";
