@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9780E7D81E4822510087A6CA /* ZBMathUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9780E7D71E4822510087A6CA /* ZBMathUtils.swift */; };
 		97EFD9A01E4452DC00366905 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97EFD99F1E4452DC00366905 /* AppDelegate.swift */; };
 		97EFD9A21E4452DC00366905 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97EFD9A11E4452DC00366905 /* ViewController.swift */; };
 		97EFD9A51E4452DC00366905 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97EFD9A31E4452DC00366905 /* Main.storyboard */; };
@@ -17,6 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		9780E7D71E4822510087A6CA /* ZBMathUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZBMathUtils.swift; sourceTree = "<group>"; };
+		9780E7D91E4823330087A6CA /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
 		97EFD99C1E4452DC00366905 /* ZBMetal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZBMetal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97EFD99F1E4452DC00366905 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		97EFD9A11E4452DC00366905 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -66,6 +69,8 @@
 				97EFD9AB1E4452DC00366905 /* Info.plist */,
 				97EFD9B11E4452F400366905 /* ZBDefaultMetal.metal */,
 				97EFD9B31E44531C00366905 /* ZBMetalView.swift */,
+				9780E7D71E4822510087A6CA /* ZBMathUtils.swift */,
+				9780E7D91E4823330087A6CA /* MyPlayground.playground */,
 			);
 			path = ZBMetal;
 			sourceTree = "<group>";
@@ -147,6 +152,7 @@
 				97EFD9A21E4452DC00366905 /* ViewController.swift in Sources */,
 				97EFD9B41E44531C00366905 /* ZBMetalView.swift in Sources */,
 				97EFD9A01E4452DC00366905 /* AppDelegate.swift in Sources */,
+				9780E7D81E4822510087A6CA /* ZBMathUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -308,6 +314,7 @@
 				97EFD9B01E4452DC00366905 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

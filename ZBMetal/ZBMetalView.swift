@@ -9,95 +9,70 @@
 import UIKit
 import MetalKit
 
-struct Matrix {
-    var m: [Float]
-
-    init() {
-        m = [1, 0, 0, 0,
-            0, 1, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1
-        ]
-    }
-
-    func translationMatrix(_ originMatrix: Matrix, _ position: float3) -> Matrix {
-        var matrix = originMatrix
-        matrix.m[12] = position.x
-        matrix.m[13] = position.y
-        matrix.m[14] = position.z
-
-        return matrix
-    }
-
-    func scalingMatrix(_ originMatrix: Matrix, _ scale: Float) -> Matrix {
-        var matrix = originMatrix
-        matrix.m[0] = scale
-        matrix.m[5] = scale
-        matrix.m[10] = scale
-        matrix.m[15] = 1.0
-
-        return matrix
-    }
-
-    func rotationMatrix(_ originMatrix: Matrix, _ rot: float3) -> Matrix {
-        var matrix = originMatrix
-        matrix.m[0] = cos(rot.y) * cos(rot.z)
-        matrix.m[4] = cos(rot.z) * sin(rot.x) * sin(rot.y) - cos(rot.x) * sin(rot.z)
-        matrix.m[8] = cos(rot.x) * cos(rot.z) * sin(rot.y) + sin(rot.x) * sin(rot.z)
-
-        matrix.m[1] = cos(rot.y) * sin(rot.z)
-        matrix.m[5] = cos(rot.x) * cos(rot.z) + sin(rot.x) * sin(rot.y) * sin(rot.z)
-        matrix.m[9] = -cos(rot.z) * sin(rot.x) + cos(rot.x) * sin(rot.y)
- * sin(rot.z)
-
-        matrix.m[2] = -sin(rot.y)
-        matrix.m[6] = cos(rot.y) * sin(rot.x)
-        matrix.m[10] = cos(rot.x) * cos(rot.y)
-
-        matrix.m[15] = 1.0
-
-        return matrix
-    }
-
-    func modelMatrix(_ originMatrix: Matrix) -> Matrix {
-        var matrix = originMatrix
-        matrix = rotationMatrix(matrix, float3(0.0, 0.0, 0.1))
-        matrix = scalingMatrix(matrix, 0.25)
-        matrix = translationMatrix(matrix, float3(0.0, 0.5, 0.0))
-        return matrix
-    }
-}
-
-struct Vertex {
-    var position: vector_float4
-    var color: vector_float4
-}
-
 class ZBMetalView: MTKView {
 
     var vertexBuffer: MTLBuffer!
     var rps: MTLRenderPipelineState! = nil
 
+    var indexBuffer: MTLBuffer!
+
     var uniformBuffer: MTLBuffer!
 
-    func render() {
+    var rotation: Float = 0
+
+    required init(coder: NSCoder) {
+        super.init(coder: coder)
+
         self.device = MTLCreateSystemDefaultDevice()
 
         self.createBuffer()
         self.registerShaders()
-        self.sendToGPU()
     }
 
     func createBuffer() {
-        let vertexData = [Vertex(position: [-1.0, -1.0, 0.0, 1.0], color: [1, 0, 0, 1]),
-                          Vertex(position: [1.0, -1.0, 0.0, 1.0], color: [0, 1, 0, 1]),
-                          Vertex(position: [0.0, 1.0, 0.0, 1.0], color: [0, 0, 1, 1])]
+        let vertexData = [Vertex(position: [-1.0, -1.0,  1.0, 1.0], color: [1, 0, 0, 1]),
+                          Vertex(position: [ 1.0, -1.0,  1.0, 1.0], color: [0, 1, 0, 1]),
+                          Vertex(position: [ 1.0,  1.0,  1.0, 1.0], color: [0, 0, 1, 1]),
+                          Vertex(position: [-1.0,  1.0,  1.0, 1.0], color: [1, 1, 1, 1]),
+                          Vertex(position: [-1.0, -1.0, -1.0, 1.0], color: [0, 0, 1, 1]),
+                          Vertex(position: [ 1.0, -1.0, -1.0, 1.0], color: [1, 1, 1, 1]),
+                          Vertex(position: [ 1.0,  1.0, -1.0, 1.0], color: [1, 0, 0, 1]),
+                          Vertex(position: [-1.0,  1.0, -1.0, 1.0], color: [0, 1, 0, 1])]
         let dataSize = vertexData.count * MemoryLayout<Vertex>.size
         self.vertexBuffer = self.device?.makeBuffer(bytes: vertexData, length: dataSize, options: [])
 
+        let indexData: [UInt16] = [0, 1, 2, 2, 3, 0, // front
+                                   1, 5, 6, 6, 2, 1, // right
+                                   3, 2, 6, 6, 7, 3, // top
+                                   4, 5, 1, 1, 0, 4, // bottom
+                                   4, 0, 3, 3, 7, 4, // left
+                                   7, 6, 5, 5, 4, 7] // back
+        self.indexBuffer = self.device?.makeBuffer(bytes: indexData, length: MemoryLayout<UInt16>.size * indexData.count, options: [])
+
         self.uniformBuffer = self.device?.makeBuffer(length: MemoryLayout<Float>.size * 16, options: [])
         let bufferPointer = self.uniformBuffer.contents()
-        memcpy(bufferPointer, Matrix().modelMatrix(Matrix()).m, MemoryLayout<Float>.size * 16)
+
+        let aspect = Float(self.drawableSize.width / self.drawableSize.height)
+        let projMatrix = projectionMatrix(near: 1, far: 100, aspect: aspect, fovy: 1.1)
+        let modelViewProjectionMatrix = matrix_multiply(projMatrix, matrix_multiply(viewMatrix(), modelMatrix()))
+        var uniforms = Uniforms(modelViewProjectionMatrix: modelViewProjectionMatrix)
+        memcpy(bufferPointer, &uniforms, MemoryLayout<Uniforms>.size)
+    }
+
+    func update() {
+        let scaled = scalingMatrix(scale: 0.5)
+        self.rotation += 1 / 100 * Float.pi / 4
+        let rotatedY = rotationMatrix(angle: self.rotation, axis: float3(0, 1, 0))
+        let rotatedX = rotationMatrix(angle: Float.pi / 4, axis: float3(1, 0, 0))
+        let modelMatrix = matrix_multiply(matrix_multiply(rotatedX, rotatedY), scaled)
+        let cameraPosition = vector_float3(0, 0, -3)
+        let viewMatrix = translationMatrix(position: cameraPosition)
+        let aspect = Float(self.drawableSize.width / self.drawableSize.height)
+        let projMatrix = projectionMatrix(near: 0, far: 10, aspect: aspect, fovy: 1)
+        let modelViewProjectionMatrix = matrix_multiply(projMatrix, matrix_multiply(viewMatrix, modelMatrix))
+        let bufferPointer = self.uniformBuffer.contents()
+        var uniforms = Uniforms(modelViewProjectionMatrix: modelViewProjectionMatrix)
+        memcpy(bufferPointer, &uniforms, MemoryLayout<Uniforms>.size)
     }
 
     func registerShaders() {
@@ -117,31 +92,31 @@ class ZBMetalView: MTKView {
         }
     }
 
-    func sendToGPU() {
-        let rpd = MTLRenderPassDescriptor()
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
+
+        self.update()
+
+        guard let rpd = self.currentRenderPassDescriptor else { return }
         guard let drawable = self.currentDrawable else { return }
         let bleen = MTLClearColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
-        rpd.colorAttachments[0].texture = drawable.texture
+//        rpd.colorAttachments[0].texture = drawable.texture
         rpd.colorAttachments[0].clearColor = bleen
-        rpd.colorAttachments[0].loadAction = .clear
+//        rpd.colorAttachments[0].loadAction = .clear
 
         let commandBuffer = self.device?.makeCommandQueue().makeCommandBuffer()
         let encoder = commandBuffer?.makeRenderCommandEncoder(descriptor: rpd)
 
+        encoder?.setFrontFacing(MTLWinding.counterClockwise)
+        encoder?.setCullMode(MTLCullMode.back)
         encoder?.setRenderPipelineState(self.rps)
         encoder?.setVertexBuffer(self.vertexBuffer, offset: 0, at: 0)
         encoder?.setVertexBuffer(self.uniformBuffer, offset: 0, at: 1)
         encoder?.setTriangleFillMode(MTLTriangleFillMode.lines)
-        encoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3, instanceCount: 1)
+        encoder?.drawIndexedPrimitives(type: .triangle, indexCount: self.indexBuffer.length / MemoryLayout<UInt16>.size, indexType: .uint16, indexBuffer: self.indexBuffer, indexBufferOffset: 0)
 
         encoder?.endEncoding()
         commandBuffer?.present(drawable)
         commandBuffer?.commit()
-    }
-
-    override func draw(_ rect: CGRect) {
-        super.draw(rect)
-
-        self.render()
     }
 }
