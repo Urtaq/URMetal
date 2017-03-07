@@ -9,8 +9,34 @@
 #include <metal_stdlib>
 using namespace metal;
 
+struct Ray {
+    float3 origin;
+    float3 direction;
+    Ray(float3 o, float3 d) {
+        origin = o;
+        direction = d;
+    }
+};
+
+struct Sphere {
+    float3 center;
+    float radius;
+    Sphere(float3 c, float r) {
+        center = c;
+        radius = r;
+    }
+};
+
 class Util {
 public:
+    static float distToSphere(Ray ray, Sphere s) {
+        return length(ray.origin - s.center) - s.radius;
+    }
+
+    static float dist(float2 point, float2 center, float radius) {
+        return length(point - center) - radius;
+    }
+
     static float distToCircle(float2 point, float2 center, float radius) {
         return length(point - center) - radius;
     }
@@ -29,17 +55,8 @@ kernel void compute(texture2d<float, access::write> output [[texture(0)]],
 
     float2 uv = float2(gid) / float2(width, height);
 
-    float3 color = float3(0.7);
-    if (fmod(uv.x, 0.1) < 0.005 || fmod(uv.y, 0.1) < 0.005) {
-        color = float3(0, 0, 1);
-    }
-    float2 uv_ext = uv * 2.0 - 1.0;
-    if (abs(uv_ext.x) < 0.02 || abs(uv_ext.y) < 0.02) {
-        color = float3(1, 0, 0);
-    }
-    if (abs(uv_ext.x - uv_ext.y) < 0.02 || abs(uv_ext.x + uv_ext.y) < 0.02) {
-        color = float3(0, 1, 0);
-    }
+    float distToCircle = Util::dist(uv, float2(0.), 0.5);
+    bool inside = distToCircle < 0.;
 
-    output.write(float4(color, 1), gid);
+    output.write(inside ? float4(1.) : float4(0.), gid);
 }
