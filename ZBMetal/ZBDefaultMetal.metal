@@ -54,9 +54,18 @@ kernel void compute(texture2d<float, access::write> output [[texture(0)]],
     int height = output.get_height();
 
     float2 uv = float2(gid) / float2(width, height);
+    uv = uv * 2.0 - 1.0;
+    Sphere s = Sphere(float3(0.), 1.);
+    Ray ray = Ray(float3(0., 0., -3.), normalize(float3(uv, 1.0)));
+    float3 col = float3(0.);
+    for (int i = 0; i < 100; i++) {
+        float dist = Util::distToSphere(ray, s);
+        if (dist < 0.001) {
+            col = float3(1.);
+            break;
+        }
+        ray.origin += ray.direction * dist;
+    }
 
-    float distToCircle = Util::dist(uv, float2(0.), 0.5);
-    bool inside = distToCircle < 0.;
-
-    output.write(inside ? float4(1.) : float4(0.), gid);
+    output.write(float4(col, 1.), gid);
 }
