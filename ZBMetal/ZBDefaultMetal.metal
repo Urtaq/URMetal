@@ -37,6 +37,13 @@ public:
         return length(point - center) - radius;
     }
 
+    static float distToScene(Ray r) {
+        Sphere s = Sphere(float3(1.0), 0.5);
+        Ray repeatRay = r;
+        repeatRay.origin = fmod(r.origin, 2.0);
+        return distToSphere(repeatRay, s);
+    }
+
     static float distToCircle(float2 point, float2 center, float radius) {
         return length(point - center) - radius;
     }
@@ -55,11 +62,10 @@ kernel void compute(texture2d<float, access::write> output [[texture(0)]],
 
     float2 uv = float2(gid) / float2(width, height);
     uv = uv * 2.0 - 1.0;
-    Sphere s = Sphere(float3(0.), 1.);
-    Ray ray = Ray(float3(0., 0., -3.), normalize(float3(uv, 1.0)));
+    Ray ray = Ray(float3(1000.), normalize(float3(uv, 1.0)));
     float3 col = float3(0.);
     for (int i = 0; i < 100; i++) {
-        float dist = Util::distToSphere(ray, s);
+        float dist = Util::distToScene(ray);
         if (dist < 0.001) {
             col = float3(1.);
             break;
@@ -67,5 +73,5 @@ kernel void compute(texture2d<float, access::write> output [[texture(0)]],
         ray.origin += ray.direction * dist;
     }
 
-    output.write(float4(col, 1.), gid);
+    output.write(float4(col * abs((ray.origin - 1000.) / 10.0), 1.), gid);
 }
