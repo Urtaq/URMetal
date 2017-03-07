@@ -20,6 +20,33 @@ public:
 
         return x * x * x * (x * (x * 6 - 15) + 10);
     }
+
+    static float random(float2 p) {
+        return fract(sin(dot(p, float2(15.79, 81.93)) * 45678.9123));
+    }
+
+    static float noise(float2 p) {
+        float2 i = floor(p);
+        float2 f = fract(p);
+        f = f * f * (3.0 - 2.0 * f);
+        float bottom = mix(random(i + float2(0)), random(i + float2(1.0, 0.0)), f.x);
+        float top = mix(random(i + float2(0.0, 1.0)), random(i + float2(1)), f.x);
+        float t = mix(bottom, top, f.y);
+
+        return t;
+    }
+
+    static float fbm(float2 uv) {
+        float sum = 0;
+        float amp = 0.7;
+        for (int i = 0; i < 4; ++i) {
+            sum += noise(uv) * amp;
+            uv += uv * 1.2;
+            amp *= 0.4;
+        }
+
+        return sum;
+    }
 };
 
 kernel void compute(texture2d<float, access::write> output [[texture(0)]],
@@ -35,14 +62,10 @@ kernel void compute(texture2d<float, access::write> output [[texture(0)]],
     float radius = 0.5;
     float distance = length(uv) - radius;
 
-    float planet = float(sqrt(radius * radius - uv.x * uv.x - uv.y * uv.y));
-    planet /= radius;
+    uv = fmod(uv + float2(timer * 0.2, 0), float2(width, height));
+    float t = Util::fbm(uv * 3);
 
-    float3 normal = normalize(float3(uv.x, uv.y, planet));
-    float3 source = normalize(float3(cos(timer), sin(timer), 1));
-    float light = dot(normal, source);
-
-    output.write(distance < 0 ? float4(float3(light), 1) : float4(0), gid);
+    output.write(distance < 0 ? float4(float3(t), 1) : float4(0), gid);
 }
 
 
