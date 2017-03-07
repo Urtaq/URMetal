@@ -14,6 +14,9 @@ class ZBMetalView: MTKView {
     var queue: MTLCommandQueue!
     var cps: MTLComputePipelineState!
 
+    var timer: Float = 0
+    var timerBuffer: MTLBuffer!
+
     required init(coder: NSCoder) {
         super.init(coder: coder)
 
@@ -35,6 +38,13 @@ class ZBMetalView: MTKView {
         } catch let error {
             print("\(error)")
         }
+        self.timerBuffer = self.device?.makeBuffer(length: MemoryLayout<Float>.size, options: [])
+    }
+
+    func update() {
+        self.timer += 0.1
+        let bufferPointer = self.timerBuffer.contents()
+        memcpy(bufferPointer, &self.timer, MemoryLayout<Float>.size)
     }
 
     override func draw(_ rect: CGRect) {
@@ -47,6 +57,8 @@ class ZBMetalView: MTKView {
 
         encoder.setComputePipelineState(self.cps)
         encoder.setTexture(drawable.texture, at: 0)
+        encoder.setBuffer(self.timerBuffer, offset: 0, at: 1)
+        self.update()
 
         let threadGroupCount = MTLSizeMake(8, 8, 1)
         let threadGroups = MTLSizeMake(drawable.texture.width / threadGroupCount.width, drawable.texture.height / threadGroupCount.height, 1)

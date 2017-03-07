@@ -56,13 +56,16 @@ public:
 };
 
 kernel void compute(texture2d<float, access::write> output [[texture(0)]],
+                    constant float &timer [[buffer(1)]],
                     uint2 gid [[thread_position_in_grid]]) {
     int width = output.get_width();
     int height = output.get_height();
 
     float2 uv = float2(gid) / float2(width, height);
     uv = uv * 2.0 - 1.0;
-    Ray ray = Ray(float3(1000.), normalize(float3(uv, 1.0)));
+
+    float3 camPos = float3(1000. + sin(timer) + 1., 1000. + cos(timer) + 1., timer);
+    Ray ray = Ray(camPos, normalize(float3(uv, 1.)));
     float3 col = float3(0.);
     for (int i = 0; i < 100; i++) {
         float dist = Util::distToScene(ray);
@@ -73,5 +76,6 @@ kernel void compute(texture2d<float, access::write> output [[texture(0)]],
         ray.origin += ray.direction * dist;
     }
 
-    output.write(float4(col * abs((ray.origin - 1000.) / 10.0), 1.), gid);
+    float3 posReletiveToCamera = ray.origin - camPos;
+    output.write(float4(col * abs((posReletiveToCamera) / 10.0), 1.), gid);
 }
