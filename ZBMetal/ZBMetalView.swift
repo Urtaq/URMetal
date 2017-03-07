@@ -131,6 +131,7 @@ class ZBMetalView: MTKView {
         encoder?.setRenderPipelineState(self.rps)
         encoder?.setVertexBuffer(self.vertexBuffer, offset: 0, at: 0)
         encoder?.setVertexBuffer(self.uniformBuffer, offset: 0, at: 1)
+        encoder?.setTriangleFillMode(MTLTriangleFillMode.lines)
         encoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3, instanceCount: 1)
 
         encoder?.endEncoding()
