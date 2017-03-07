@@ -50,8 +50,8 @@ public:
 };
 
 kernel void compute(texture2d<float, access::write> output [[texture(0)]],
-                    constant float &timer [[buffer(1)]],
-                    constant float2 &mouse [[buffer(2)]],
+                    texture2d<float, access::sample> input [[texture(1)]],
+                    constant float &timer [[buffer(0)]],
                     uint2 gid [[thread_position_in_grid]]) {
     int width = output.get_width();
     int height = output.get_height();
@@ -62,10 +62,25 @@ kernel void compute(texture2d<float, access::write> output [[texture(0)]],
     float radius = 0.5;
     float distance = length(uv) - radius;
 
-    uv = fmod(uv + float2(timer * 0.2, 0), float2(width, height));
-    float t = Util::fbm(uv * 3);
+    float4 color = input.read(gid);
 
-    output.write(distance < 0 ? float4(float3(t), 1) : float4(0), gid);
+//    uv = fmod(float2(gid) + float2(timer * 100, 0), float2(width, height));
+//    color = input.read(uint2(uv));
+
+    uv = uv * 2;
+    radius = 1;
+    constexpr sampler textureSampler(coord::normalized,
+                                     address::repeat,
+                                     min_filter::linear,
+                                     mag_filter::linear,
+                                     mip_filter::linear);
+    float3 norm = float3(uv, sqrt(1.0 - dot(uv, uv)));
+    float pi = 3.14;
+    float s = atan2(norm.z, norm.x) / (2 * pi);
+    float t = asin(norm.y) / (2 * pi);
+    t += 0.5;
+    color = input.sample(textureSampler, float2(s + timer * 0.1, t));
+    output.write(distance < 0 ? color : float4(0), gid);
 }
 
 

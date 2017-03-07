@@ -15,8 +15,8 @@ class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
 
     var timer: Float = 0
     var timerBuffer: MTLBuffer!
-    var pos: CGPoint!
-    var mouseBuffer: MTLBuffer!
+
+    var texture: MTLTexture!
 
     required init(coder: NSCoder) {
         super.init(coder: coder)
@@ -26,9 +26,7 @@ class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
         self.device = MTLCreateSystemDefaultDevice()
 
         self.registerShaders()
-
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        self.addGestureRecognizer(tapGesture)
+        self.setUpTexture()
     }
 
     func registerShaders() {
@@ -43,15 +41,19 @@ class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
             print("\(error)")
         }
         self.timerBuffer = self.device?.makeBuffer(length: MemoryLayout<Float>.size, options: [])
-        self.mouseBuffer = self.device?.makeBuffer(length: MemoryLayout<CGPoint>.size, options: [])
+    }
+
+    func setUpTexture() {
+        let path = Bundle.main.path(forResource: "texture", ofType: "jpg")
+        let textureLoader = MTKTextureLoader(device: self.device!)
+
+        self.texture = try! textureLoader.newTexture(withContentsOf: URL(fileURLWithPath: path!), options: nil)
     }
 
     func update() {
         self.timer += 0.01
         var bufferPointer = self.timerBuffer.contents()
         memcpy(bufferPointer, &self.timer, MemoryLayout<Float>.size)
-        bufferPointer = self.mouseBuffer.contents()
-        memcpy(bufferPointer, &self.pos, MemoryLayout<CGPoint>.size)
     }
 
     override func draw(_ rect: CGRect) {
@@ -64,8 +66,8 @@ class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
 
         encoder.setComputePipelineState(self.cps)
         encoder.setTexture(drawable.texture, at: 0)
-        encoder.setBuffer(self.timerBuffer, offset: 0, at: 1)
-        encoder.setBuffer(self.mouseBuffer, offset: 0, at: 2)
+        encoder.setTexture(self.texture, at: 1)
+        encoder.setBuffer(self.timerBuffer, offset: 0, at: 0)
         self.update()
 
         let threadGroupCount = MTLSizeMake(8, 8, 1)
@@ -75,14 +77,5 @@ class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
         encoder.endEncoding()
         commandBuffer.present(drawable)
         commandBuffer.commit()
-    }
-
-    func handleTap(gesture: UITapGestureRecognizer) {
-        if gesture.state == .ended {
-            self.pos = gesture.location(in: self)
-            let scale = self.layer.contentsScale
-            pos.x *= scale
-            pos.y *= scale
-        }
     }
 }
