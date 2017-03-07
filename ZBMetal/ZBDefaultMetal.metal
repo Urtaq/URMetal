@@ -38,7 +38,11 @@ kernel void compute(texture2d<float, access::write> output [[texture(0)]],
     float planet = float(sqrt(radius * radius - uv.x * uv.x - uv.y * uv.y));
     planet /= radius;
 
-    output.write(distance < 0 ? float4(planet) : float4(0), gid);
+    float3 normal = normalize(float3(uv.x, uv.y, planet));
+    float3 source = normalize(float3(-1, 0, 1));
+    float light = dot(normal, source);
+
+    output.write(distance < 0 ? float4(float3(light), 1) : float4(0), gid);
 }
 
 
