@@ -77,9 +77,7 @@ class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
     }
 
     func update() {
-        if self.timer < 5 {
-            self.timer += 0.01
-        }
+        self.timer += 0.01
         var bufferPointer = self.timerBuffer.contents()
         memcpy(bufferPointer, &self.timer, MemoryLayout<Float>.size)
         bufferPointer = self.gestureBuffer.contents()
