@@ -8,6 +8,24 @@
 
 import MetalKit
 
+struct CGFloatPoint {
+    var x: Float
+    var y: Float
+
+    static var zero: CGFloatPoint {
+        return CGFloatPoint(x: 0, y: 0)
+    }
+
+    init(x: CGFloat, y: CGFloat) {
+        self.x = Float(x)
+        self.y = Float(y)
+    }
+}
+
+func ==(left: CGFloatPoint, right: CGFloatPoint) -> Bool {
+    return left.x == right.x && left.y == right.y
+}
+
 class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
 
     var queue: MTLCommandQueue!
@@ -18,6 +36,10 @@ class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
 
     var texture: MTLTexture!
 
+    var pos: CGFloatPoint = CGFloatPoint.zero
+    var gestureBuffer: MTLBuffer!
+    var panGesture: UIPanGestureRecognizer!
+
     required init(coder: NSCoder) {
         super.init(coder: coder)
 
@@ -27,6 +49,9 @@ class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
 
         self.registerShaders()
         self.setUpTexture()
+
+        self.panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan))
+        self.addGestureRecognizer(self.panGesture)
     }
 
     func registerShaders() {
@@ -41,6 +66,7 @@ class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
             print("\(error)")
         }
         self.timerBuffer = self.device?.makeBuffer(length: MemoryLayout<Float>.size, options: [])
+        self.gestureBuffer = self.device?.makeBuffer(length: MemoryLayout<CGPoint>.size, options: [])
     }
 
     func setUpTexture() {
@@ -51,9 +77,13 @@ class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
     }
 
     func update() {
-        self.timer += 0.01
+        if self.timer < 5 {
+            self.timer += 0.01
+        }
         var bufferPointer = self.timerBuffer.contents()
         memcpy(bufferPointer, &self.timer, MemoryLayout<Float>.size)
+        bufferPointer = self.gestureBuffer.contents()
+        memcpy(bufferPointer, &self.pos, MemoryLayout<CGFloatPoint>.size)
     }
 
     override func draw(_ rect: CGRect) {
@@ -68,6 +98,7 @@ class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
         encoder.setTexture(drawable.texture, at: 0)
         encoder.setTexture(self.texture, at: 1)
         encoder.setBuffer(self.timerBuffer, offset: 0, at: 0)
+        encoder.setBuffer(self.gestureBuffer, offset: 0, at: 1)
         self.update()
 
         let threadGroupCount = MTLSizeMake(8, 8, 1)
@@ -77,5 +108,22 @@ class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
         encoder.endEncoding()
         commandBuffer.present(drawable)
         commandBuffer.commit()
+    }
+
+    var panPosition: CGPoint = CGPoint.zero
+    func handlePan(gesture: UIPanGestureRecognizer) {
+        if gesture.state == .began {
+            self.panPosition = gesture.location(in: self)
+        } else if gesture.state == .changed {
+            let location = gesture.location(in: self)
+            let movedRatio: CGFloat = (location.x - self.panPosition.x) / UIScreen.main.bounds.width
+
+            let scale = self.layer.contentsScale
+            if self.pos == CGFloatPoint.zero {
+                self.pos = CGFloatPoint(x: movedRatio, y: 0)
+            } else {
+                self.pos.x += Float(movedRatio * scale)
+            }
+        }
     }
 }

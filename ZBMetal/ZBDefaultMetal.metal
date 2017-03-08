@@ -52,6 +52,7 @@ public:
 kernel void compute(texture2d<float, access::write> output [[texture(0)]],
                     texture2d<float, access::sample> input [[texture(1)]],
                     constant float &timer [[buffer(0)]],
+                    constant float2 &gesture [[buffer(1)]],
                     uint2 gid [[thread_position_in_grid]]) {
     int width = output.get_width();
     int height = output.get_height();
@@ -79,7 +80,7 @@ kernel void compute(texture2d<float, access::write> output [[texture(0)]],
     float s = atan2(norm.z, norm.x) / (2 * pi);
     float t = asin(norm.y) / (2 * pi);
     t += 0.5;
-    color = input.sample(textureSampler, float2(s + timer * 0.1, t));
+    color = input.sample(textureSampler, float2(s + timer * 0.1 + gesture.x, t));
     output.write(distance < 0 ? color : float4(0), gid);
 }
 
