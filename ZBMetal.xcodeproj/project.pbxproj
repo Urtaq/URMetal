@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9780E7D81E4822510087A6CA /* ZBMathUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9780E7D71E4822510087A6CA /* ZBMathUtils.swift */; };
+		971F32781E6E7E1A00943CB3 /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 971F32771E6E7E1A00943CB3 /* DetailViewController.swift */; };
+		971F327A1E6E7FCD00943CB3 /* RevealServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 971F32791E6E7FCD00943CB3 /* RevealServer.framework */; };
+		971F327D1E6EA56200943CB3 /* texture.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 971F327C1E6EA56200943CB3 /* texture.jpg */; };
+		972F2BCA1E651420000D0511 /* ZBMTKViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972F2BC91E651420000D0511 /* ZBMTKViewDelegate.swift */; };
 		97EFD9A01E4452DC00366905 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97EFD99F1E4452DC00366905 /* AppDelegate.swift */; };
 		97EFD9A21E4452DC00366905 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97EFD9A11E4452DC00366905 /* ViewController.swift */; };
 		97EFD9A51E4452DC00366905 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97EFD9A31E4452DC00366905 /* Main.storyboard */; };
@@ -18,8 +21,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		9780E7D71E4822510087A6CA /* ZBMathUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZBMathUtils.swift; sourceTree = "<group>"; };
-		9780E7D91E4823330087A6CA /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; };
+		971F32771E6E7E1A00943CB3 /* DetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
+		971F32791E6E7FCD00943CB3 /* RevealServer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = RevealServer.framework; sourceTree = "<group>"; };
+		971F327C1E6EA56200943CB3 /* texture.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = texture.jpg; path = MyPlayground.playground/Resources/texture.jpg; sourceTree = "<group>"; };
+		9727E9D61E6D5A26005BDED3 /* MyPlayground.playground */ = {isa = PBXFileReference; lastKnownFileType = file.playground; path = MyPlayground.playground; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		972F2BC91E651420000D0511 /* ZBMTKViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZBMTKViewDelegate.swift; sourceTree = "<group>"; };
 		97EFD99C1E4452DC00366905 /* ZBMetal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZBMetal.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97EFD99F1E4452DC00366905 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		97EFD9A11E4452DC00366905 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -36,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				971F327A1E6E7FCD00943CB3 /* RevealServer.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -47,6 +54,7 @@
 			children = (
 				97EFD99E1E4452DC00366905 /* ZBMetal */,
 				97EFD99D1E4452DC00366905 /* Products */,
+				971F32791E6E7FCD00943CB3 /* RevealServer.framework */,
 			);
 			sourceTree = "<group>";
 		};
@@ -63,14 +71,16 @@
 			children = (
 				97EFD99F1E4452DC00366905 /* AppDelegate.swift */,
 				97EFD9A11E4452DC00366905 /* ViewController.swift */,
+				971F32771E6E7E1A00943CB3 /* DetailViewController.swift */,
 				97EFD9A31E4452DC00366905 /* Main.storyboard */,
 				97EFD9A61E4452DC00366905 /* Assets.xcassets */,
 				97EFD9A81E4452DC00366905 /* LaunchScreen.storyboard */,
 				97EFD9AB1E4452DC00366905 /* Info.plist */,
 				97EFD9B11E4452F400366905 /* ZBDefaultMetal.metal */,
 				97EFD9B31E44531C00366905 /* ZBMetalView.swift */,
-				9780E7D71E4822510087A6CA /* ZBMathUtils.swift */,
-				9780E7D91E4823330087A6CA /* MyPlayground.playground */,
+				972F2BC91E651420000D0511 /* ZBMTKViewDelegate.swift */,
+				971F327C1E6EA56200943CB3 /* texture.jpg */,
+				9727E9D61E6D5A26005BDED3 /* MyPlayground.playground */,
 			);
 			path = ZBMetal;
 			sourceTree = "<group>";
@@ -85,6 +95,7 @@
 				97EFD9981E4452DC00366905 /* Sources */,
 				97EFD9991E4452DC00366905 /* Frameworks */,
 				97EFD99A1E4452DC00366905 /* Resources */,
+				971F327B1E6E802D00943CB3 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -138,10 +149,27 @@
 				97EFD9AA1E4452DC00366905 /* LaunchScreen.storyboard in Resources */,
 				97EFD9A71E4452DC00366905 /* Assets.xcassets in Resources */,
 				97EFD9A51E4452DC00366905 /* Main.storyboard in Resources */,
+				971F327D1E6EA56200943CB3 /* texture.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		971F327B1E6E802D00943CB3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export REVEAL_SERVER_FILENAME=\"RevealServer.framework\"\n\n# Update this path to point to the location of RevealServer.framework in your project.\nexport REVEAL_SERVER_PATH=\"${SRCROOT}/${REVEAL_SERVER_FILENAME}\"\n\n# If configuration is not Debug, skip this script.\n[ \"${CONFIGURATION}\" != \"Debug\" ] && exit 0\n\n# If RevealServer.framework exists at the specified path, run code signing script.\nif [ -d \"${REVEAL_SERVER_PATH}\" ]; then\n\"${REVEAL_SERVER_PATH}/Scripts/copy_and_codesign_revealserver.sh\"\nelse\necho \"Reveal Server not loaded: RevealServer.framework could not be found.\"\nfi";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		97EFD9981E4452DC00366905 /* Sources */ = {
@@ -150,9 +178,10 @@
 			files = (
 				97EFD9B21E4452F400366905 /* ZBDefaultMetal.metal in Sources */,
 				97EFD9A21E4452DC00366905 /* ViewController.swift in Sources */,
+				972F2BCA1E651420000D0511 /* ZBMTKViewDelegate.swift in Sources */,
+				971F32781E6E7E1A00943CB3 /* DetailViewController.swift in Sources */,
 				97EFD9B41E44531C00366905 /* ZBMetalView.swift in Sources */,
 				97EFD9A01E4452DC00366905 /* AppDelegate.swift in Sources */,
-				9780E7D81E4822510087A6CA /* ZBMathUtils.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,8 +303,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 7AX2JZT3L8;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(SRCROOT)",
+				);
 				INFOPLIST_FILE = ZBMetal/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-weak_framework",
+					RevealServer,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.zigbang.ZBMetal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;
@@ -287,8 +327,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEVELOPMENT_TEAM = 7AX2JZT3L8;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(SRCROOT)",
+				);
 				INFOPLIST_FILE = ZBMetal/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-weak_framework",
+					RevealServer,
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.zigbang.ZBMetal;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 3.0;

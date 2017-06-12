@@ -6,74 +6,76 @@
 //  Copyright © 2017년 zigbang. All rights reserved.
 //
 
-import UIKit
 import MetalKit
 
-class ZBMetalView: MTKView {
+class ZBMetalView: MTKView, UIGestureRecognizerDelegate {
 
-    var vertexBuffer: MTLBuffer!
-    var rps: MTLRenderPipelineState! = nil
+    var queue: MTLCommandQueue!
+    var cps: MTLComputePipelineState!
 
-    var uniformBuffer: MTLBuffer!
+    var timer: Float = 0
+    var timerBuffer: MTLBuffer!
+
+    var texture: MTLTexture!
 
     required init(coder: NSCoder) {
         super.init(coder: coder)
 
+        self.framebufferOnly = false
+
         self.device = MTLCreateSystemDefaultDevice()
 
-        self.createBuffer()
         self.registerShaders()
-    }
-
-    func createBuffer() {
-        let vertexData = [Vertex(position: [-1.0, -1.0, 0.0, 1.0], color: [1, 0, 0, 1]),
-                          Vertex(position: [1.0, -1.0, 0.0, 1.0], color: [0, 1, 0, 1]),
-                          Vertex(position: [0.0, 1.0, 0.0, 1.0], color: [0, 0, 1, 1])]
-        let dataSize = vertexData.count * MemoryLayout<Vertex>.size
-        self.vertexBuffer = self.device?.makeBuffer(bytes: vertexData, length: dataSize, options: [])
-
-        self.uniformBuffer = self.device?.makeBuffer(length: MemoryLayout<Float>.size * 16, options: [])
-        let bufferPointer = self.uniformBuffer.contents()
-        memcpy(bufferPointer, Matrix().modelMatrix(Matrix()).m, MemoryLayout<Float>.size * 16)
+        self.setUpTexture()
     }
 
     func registerShaders() {
-        guard let library = self.device?.newDefaultLibrary() else { return }
-        let vertexFunc = library.makeFunction(name: "vertex_func")
-        let fragFunc = library.makeFunction(name: "fragment_func")
+        self.queue = self.device?.makeCommandQueue()
 
-        let rpld = MTLRenderPipelineDescriptor()
-        rpld.vertexFunction = vertexFunc
-        rpld.fragmentFunction = fragFunc
-        rpld.colorAttachments[0].pixelFormat = .bgra8Unorm
+        guard let library = self.device?.newDefaultLibrary() else { return }
+        let kernel = library.makeFunction(name: "compute")
 
         do {
-            self.rps = try self.device?.makeRenderPipelineState(descriptor: rpld)
+            self.cps = try self.device?.makeComputePipelineState(function: kernel!)
         } catch let error {
             print("\(error)")
         }
+        self.timerBuffer = self.device?.makeBuffer(length: MemoryLayout<Float>.size, options: [])
+    }
+
+    func setUpTexture() {
+        let path = Bundle.main.path(forResource: "texture", ofType: "jpg")
+        let textureLoader = MTKTextureLoader(device: self.device!)
+
+        self.texture = try! textureLoader.newTexture(withContentsOf: URL(fileURLWithPath: path!), options: nil)
+    }
+
+    func update() {
+        self.timer += 0.01
+        var bufferPointer = self.timerBuffer.contents()
+        memcpy(bufferPointer, &self.timer, MemoryLayout<Float>.size)
     }
 
     override func draw(_ rect: CGRect) {
         super.draw(rect)
 
-        guard let rpd = self.currentRenderPassDescriptor else { return }
         guard let drawable = self.currentDrawable else { return }
-        let bleen = MTLClearColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1)
-//        rpd.colorAttachments[0].texture = drawable.texture
-        rpd.colorAttachments[0].clearColor = bleen
-//        rpd.colorAttachments[0].loadAction = .clear
 
-        let commandBuffer = self.device?.makeCommandQueue().makeCommandBuffer()
-        let encoder = commandBuffer?.makeRenderCommandEncoder(descriptor: rpd)
+        let commandBuffer = self.queue.makeCommandBuffer()
+        let encoder = commandBuffer.makeComputeCommandEncoder()
 
-        encoder?.setRenderPipelineState(self.rps)
-        encoder?.setVertexBuffer(self.vertexBuffer, offset: 0, at: 0)
-        encoder?.setVertexBuffer(self.uniformBuffer, offset: 0, at: 1)
-        encoder?.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 3, instanceCount: 1)
+        encoder.setComputePipelineState(self.cps)
+        encoder.setTexture(drawable.texture, at: 0)
+        encoder.setTexture(self.texture, at: 1)
+        encoder.setBuffer(self.timerBuffer, offset: 0, at: 0)
+        self.update()
 
-        encoder?.endEncoding()
-        commandBuffer?.present(drawable)
-        commandBuffer?.commit()
+        let threadGroupCount = MTLSizeMake(8, 8, 1)
+        let threadGroups = MTLSizeMake(drawable.texture.width / threadGroupCount.width, drawable.texture.height / threadGroupCount.height, 1)
+        encoder.dispatchThreadgroups(threadGroups, threadsPerThreadgroup: threadGroupCount)
+
+        encoder.endEncoding()
+        commandBuffer.present(drawable)
+        commandBuffer.commit()
     }
 }

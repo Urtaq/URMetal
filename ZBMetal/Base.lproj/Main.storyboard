@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="365-Aa-LjX">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--MTKView-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="ZBMetal" customModuleProvider="target" sceneMemberID="viewController">
@@ -17,14 +17,87 @@
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC" customClass="ZBMetalView" customModule="ZBMetal" customModuleProvider="target">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="90e-n8-d3F" customClass="ZBMetalView" customModule="ZBMetal" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="146" width="375" height="375"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="90e-n8-d3F" secondAttribute="height" multiplier="1:1" id="cYH-zd-fIb"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <constraints>
+                            <constraint firstItem="90e-n8-d3F" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="W0Y-Im-AFn"/>
+                            <constraint firstItem="90e-n8-d3F" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="kHd-eU-g2P"/>
+                            <constraint firstAttribute="trailing" secondItem="90e-n8-d3F" secondAttribute="trailing" id="l4w-ZH-v3g"/>
+                            <constraint firstItem="90e-n8-d3F" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="wxq-vr-4Yk"/>
+                        </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="MTKView" id="GWV-ef-Z6o">
+                        <barButtonItem key="rightBarButtonItem" title="Delegate" id="vhR-uf-mv9">
+                            <connections>
+                                <segue destination="E5W-ez-3mU" kind="show" id="nWe-33-RE8"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="1076" y="137.18140929535232"/>
+        </scene>
+        <!--Delegate-->
+        <scene sceneID="QVi-2x-PPW">
+            <objects>
+                <viewController id="E5W-ez-3mU" customClass="DetailViewController" customModule="ZBMetal" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="aBY-KM-mF4"/>
+                        <viewControllerLayoutGuide type="bottom" id="Da9-Ov-ciV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="2KN-WQ-skd">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="I7a-kN-rvZ">
+                                <rect key="frame" x="170.5" y="593" width="34" height="30"/>
+                                <state key="normal" title="Start"/>
+                                <connections>
+                                    <action selector="buttonDidTap:" destination="E5W-ez-3mU" eventType="touchUpInside" id="ErS-hG-2Xz"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="I7a-kN-rvZ" firstAttribute="centerX" secondItem="2KN-WQ-skd" secondAttribute="centerX" id="LM7-TK-qhq"/>
+                            <constraint firstItem="Da9-Ov-ciV" firstAttribute="top" secondItem="I7a-kN-rvZ" secondAttribute="bottom" constant="44" id="fOA-VI-lUM"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" title="Delegate" id="umO-tt-Ohq"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="V23-xV-4q7" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1932" y="149.77511244377811"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="a8Z-ak-9A7">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="365-Aa-LjX" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="0Lf-Qy-JTR">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="zfQ-Q5-Cuf"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="uax-37-8v1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="284" y="150"/>
         </scene>
     </scenes>
 </document>
