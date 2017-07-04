@@ -35,6 +35,7 @@ PlaygroundPage.current.liveView = view
 let dd: [String: Any] = ["x": "y"]
 let ttx = String(describing: type(of: dd["x"] as! String))
 let tty = String(describing: String.self)
+let ttz = type(of: String.self)
 
 let cos_1 = cos(14.24)
 
